@@ -104,11 +104,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\aliss\vs\XSFram\glad\include;D:\aliss\vs\XSFram\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\aliss\vs\XSFram\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)\SDL2\lib\x64\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -118,23 +125,41 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>D:\aliss\vs\XSFram\glad\include;D:\aliss\vs\XSFram\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\aliss\vs\XSFram\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)\SDL2\lib\x64\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Code\App.cpp" />
+    <ClCompile Include="Code\GDI.cpp" />
     <ClCompile Include="Code\MainLoop.cpp" />
+    <ClCompile Include="Code\OpenGL_GDI.cpp" />
     <ClCompile Include="Code\SetupDisplay.cpp" />
+    <ClCompile Include="glad\src\glad.c" />
+    <ClCompile Include="XSFML\XSFML.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Code\GDI.h" />
     <ClInclude Include="Code\IncludeGraphics.h" />
     <ClInclude Include="Code\MainLoop.h" />
+    <ClInclude Include="Code\OpenGL_GDI.h" />
     <ClInclude Include="Code\SetupDisplay.h" />
+    <ClInclude Include="glad\include\glad\glad.h" />
+    <ClInclude Include="XSFML\XSFML.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shareds\default.stage.xsd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

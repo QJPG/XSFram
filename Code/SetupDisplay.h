@@ -1,113 +1,154 @@
 #pragma once
 
+#include <SDL.h>
+
 #include "IncludeGraphics.h"
 
-#define DG_NAME_UNKNWN "Unknown"
-#define DG_NAME_OPENGL "OpenGL"
 
 struct BaseDisplayContext {
-	unsigned short sw_Width;
-	unsigned short sw_Height;
 
-	BaseDisplayContext() {
-		sw_Width = 1024;
-		sw_Height = 600;
-	}
-};
+private:
+    bool                bdc_HasChanges;
 
+    unsigned short      sw_Width;
+    unsigned short      sw_Height;
 
-struct TypeDisplayDriver {
-	bool rq_UpdateDisplayDriver;
+    int                 pw_PosX;
+    int                 pw_PosY;
 
-	unsigned short v_Minor;
-	unsigned short v_Major;
-
-	const char* d_Name;
+    str                 wd_Title;
+    bool                wd_EnableDebug;
 
 public:
-	enum GetterVersions {
-		GET_MINOR_VERSION,
-		GET_MAJOR_VERSION,
-	};
+    GDI* ptr_GDI = NULL;
 
-	TypeDisplayDriver() {
-		rq_UpdateDisplayDriver = false;
+    enum WindowFlags {
+        NORMAL,
+        OPENGL,
+        VULKAN,
+        METAL,
+    };
 
-		v_Minor = 0;
-		v_Major = 0;
+    WindowFlags flag;
 
-		d_Name = DG_NAME_UNKNWN;
-	}
+    unsigned int GDI_VMinor;
+    unsigned int GDI_VMajor;
 
-	void setVersions(unsigned short minor, unsigned short major) {
-		v_Minor = minor;
-		v_Major = major;
-		rq_UpdateDisplayDriver = true;
-	}
+    bool beginCentered;
 
-	unsigned short getVersion(GetterVersions version) const {
-		switch (version) {
-			case GET_MINOR_VERSION:
-				return v_Minor;
-			
-			case GET_MAJOR_VERSION:
-				return v_Major;
-		};
+    BaseDisplayContext() {
+        flag = WindowFlags::NORMAL;
 
-		return 0;
-	}
+        GDI_VMinor = 0;
+        GDI_VMajor = 0;
 
-	const char* getDriverName() const {
-		return d_Name;
-	}
-};
+        beginCentered = true;
 
-struct OpenGLDisplayDriver : TypeDisplayDriver {
-	OpenGLDisplayDriver() {
-		v_Minor = 3;
-		v_Major = 0;
+        bdc_HasChanges = false;
 
-		d_Name = DG_NAME_OPENGL;
-	}
+        sw_Width = 1024;
+        sw_Height = 600;
+
+        pw_PosX = 0;
+        pw_PosY = 0;
+
+        wd_Title = "";
+        wd_EnableDebug = false;
+    }
+
+    ~BaseDisplayContext() {
+        delete ptr_GDI;
+    }
+
+    void SetTitle(const char* title) {
+        wd_Title = title;
+        bdc_HasChanges = true;
+    }
+
+    void SetSize(unsigned short width, unsigned short height) {
+        sw_Width = width;
+        sw_Height = height;
+        bdc_HasChanges = true;
+    }
+
+    bool HasChanges() const {
+        return bdc_HasChanges;
+    }
+
+    void ReleaseChanges() {
+        bdc_HasChanges = false;
+    }
+
+    const char* GetTitle() const {
+        return wd_Title;
+    }
+
+    unsigned short GetWidth() const {
+        return sw_Width;
+    }
+
+    unsigned short GetHeight() const {
+        return sw_Height;
+    }
+
+    int GetPosX() const {
+        return pw_PosX;
+    }
+
+    int GetPosY() const {
+        return pw_PosY;
+    }
+
+    void SetPosition(int x, int y) {
+        pw_PosX = x;
+        pw_PosY = y;
+        bdc_HasChanges = true;
+    }
 };
 
 class SetupDisplay
 {
 
 public:
-	enum CodeDestroyReasons {
-		NORMAL_REASON,
-		DISPLAY_ERROR_REASON,
-		DRIVER_ERROR_REASON,
-	};
+    enum CodeDestroyReasons {
+        NORMAL_REASON,
+        DISPLAY_ERROR_REASON,
+        DRIVER_ERROR_REASON,
+    };
 
-	SetupDisplay						();
+    void*                               STD_PROCESS = NULL;
 
-	void InitDisplay					(BaseDisplayContext& bDisplayContext);
-	void InitGraphics					(TypeDisplayDriver& tDisplayDriver);
-	
-	void UpdateDisplay					(BaseDisplayContext& bDisplayContext);
-	void UpdateGraphics					(TypeDisplayDriver& tDisplayDriver);
+    SetupDisplay						();
 
-	void DestroyGraphics				(TypeDisplayDriver& tDisplayDriver);
-	void DestroyDisplay					(BaseDisplayContext& bDisplayContext);
+    void InitDisplay					(BaseDisplayContext& bDisplayContext);
+    //void InitGraphics					(GDI& XGDI);
+    
+    void UpdateDisplay					(BaseDisplayContext& bDisplayContext);
+    //void UpdateGraphics					(GDI& XGDI);
 
-	bool RequestedDestroySetup			() const;
+    //void DestroyGraphics				(GDI& XGDI);
+    void DestroyDisplay					(BaseDisplayContext& bDisplayContext);
 
-	CodeDestroyReasons GetDestroyReason	() const;
+    bool IsRequestedDestroySetup		() const;
 
-	template	<typename T>
+    CodeDestroyReasons GetDestroyReason	() const;
 
-	static T& GetDisplayDriver			(TypeDisplayDriver& tDisplayDriver);
+    template	<typename T>
+
+    static T& GetGDI			        (GDI& XGDI);
 
 private:
-	bool rq_DestroySetup;
+    bool rq_DestroySetup;
 
-	CodeDestroyReasons rs_DestroySetup;
+    CodeDestroyReasons rs_DestroySetup;
+
+    SDL_Window* ptr_SDLWindow = NULL;
+    SDL_GLContext STDGLContext = NULL;
+    SDL_Event SDLEvent = SDL_Event{};
 };
 
 template<typename T>
-inline T& SetupDisplay::GetDisplayDriver(TypeDisplayDriver& tDisplayDriver)
+inline T& SetupDisplay::GetGDI(GDI& XGDI)
 {
-	return static_cast<T&>(tDisplayDriver);
+    return static_cast<T&>(XGDI);
 }

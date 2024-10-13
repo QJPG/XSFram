@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xstage>
+	<xdriver driver="OpenGL" minor="0" major="3">
+		<xframes>
+			<xframe name="FBO GBuffer">
+				<xtexture name="Target Diffuse" type="Texture 2D" format="Format RGBA" sizeformat="Format Size RGBA16F" datatype="Float"></xtexture>
+				<xtexture name="Target Normal" type="Texture 2D" format="Format RGBA" sizeformat="Format Size RGBA16F"  datatype="Float"></xtexture>
+				<xtexture name="Target Specular" type="Texture 2D" format="Format RGBA" sizeformat="Format Size RGBA16F"  datatype="Float"></xtexture>
+				<xtexture name="Target Depth" type="Texture 2D" format="Format Depth" sizeformat="Format Depth"  datatype="Float"></xtexture>
+			</xframe>
+
+		</xframes>
+	</xdriver>
+
+	<xdriver driver="D3D12">
+		<!--Implemeting-->
+	</xdriver>
+
+	<xpreload>
+		<xdrawable name="Triangle" filename=""></xdrawable>
+	</xpreload>
+</xstage>
