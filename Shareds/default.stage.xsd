@@ -2,7 +2,7 @@
 <xstage>
 	<xdriver driver="OpenGL" minor="0" major="3">
 		<xframes>
-			<xframe name="FBO GBuffer">
+			<xframe name="GBuffer">
 				<xtexture name="Target Diffuse" type="Texture 2D" format="Format RGBA" sizeformat="Format Size RGBA16F" datatype="Float"></xtexture>
 				<xtexture name="Target Normal" type="Texture 2D" format="Format RGBA" sizeformat="Format Size RGBA16F"  datatype="Float"></xtexture>
 				<xtexture name="Target Specular" type="Texture 2D" format="Format RGBA" sizeformat="Format Size RGBA16F"  datatype="Float"></xtexture>

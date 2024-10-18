@@ -1,3 +1,7 @@
+/*
+DEPRECATED
+*/
+
 #include "MainLoop.h"
 
 MainLoop::MainLoop()

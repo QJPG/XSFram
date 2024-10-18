@@ -1,5 +1,5 @@
 #pragma once
 
-#include "OpenGL_GDI.h"
+#include "OpenGLGDI.h"
 
 /*Include All Graphics Modules Here*/

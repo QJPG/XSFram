@@ -1,4 +1,9 @@
+/*
+DEPRECATED
+*/
+
 #include "SetupDisplay.h"
+
 
 SetupDisplay::SetupDisplay()
 {

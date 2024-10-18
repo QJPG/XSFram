@@ -1,8 +1,10 @@
 #include <iostream>
 
+#include "../XSFML/XSFML.h"
 #include "MainLoop.h"
+#include "Environment.h"
 
-namespace DVI {
+namespace DeviceConfig {
     typedef const char* CSTR;
 
     template <typename T>
@@ -21,13 +23,13 @@ namespace DVI {
 
     struct WNDINFO {
         enum {
-            NORMAL_WINDOW       = 1 << 0,
-            RESIZABLE_WINDOW    = 1 << 1,
-            OPENGL_WINDOW       = 1 << 2,
-            VULKAN_WINDOW       = 1 << 3,
-            METAL_WINDOW        = 1 << 4,
-            FLSCR_WINDOW        = 1 << 5,
-            CNTER_WINDOW        = 1 << 6,
+            NORMAL_WINDOW       = 0x1 << 0x0,
+            RESIZABLE_WINDOW    = 0x1 << 0x1,
+            OPENGL_WINDOW       = 0x1 << 0x2,
+            VULKAN_WINDOW       = 0x1 << 0x3,
+            METAL_WINDOW        = 0x1 << 0x4,
+            FLSCR_WINDOW        = 0x1 << 0x5,
+            CENTER_WINDOW       = 0x1 << 0x6,
         };
 
         unsigned int    FLAGS = NORMAL_WINDOW;
@@ -46,7 +48,7 @@ namespace DVI {
 
         bool            RUNNING = false;
 
-        int             EXITCODE = 0;
+        int             EXITCODE = 0x0;
 
         ~WNDINFO() {
             if (WNDGDI) delete WNDGDI;
@@ -69,11 +71,11 @@ namespace DVI {
         }
 
         bool IS_CENTERED() const {
-            return FLAGS & CNTER_WINDOW;
+            return FLAGS & CENTER_WINDOW;
         }
     };
 
-    void INIT_DISPLAY(WNDINFO& INFO) {
+    void WINDOW_INIT(WNDINFO& INFO) {
         INFO.UPDATED = false;
 
         assert(INFO.WNDGDI != nullptr, "Error: Invalid GDI!");
@@ -85,17 +87,19 @@ namespace DVI {
         if (INFO.IS_OPENGL()) {
             SDL_WNDFLAGS |= SDL_WINDOW_OPENGL;
 
+            OpenGLGDI& OGLGDI = (OpenGLGDI&) INFO.WNDGDI;
+
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,   INFO.WNDGDI->VERSION_MAJOR);
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,   INFO.WNDGDI->VERSION_MINOR);
             
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,    SDL_GL_CONTEXT_PROFILE_CORE);
 
-            SDL_GL_SetAttribute(SDL_GL_RED_SIZE,        8);
-            SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,      8);
-            SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,       8);
-            SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,      8);
-            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      24);
-            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    1);
+            SDL_GL_SetAttribute(SDL_GL_RED_SIZE,        OGLGDI.SIZE_CHANNEL_R);
+            SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,      OGLGDI.SIZE_CHANNEL_G);
+            SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,       OGLGDI.SIZE_CHANNEL_B);
+            SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,      OGLGDI.SIZE_CHANNEL_A);
+            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,      OGLGDI.SIZE_BUFFER_DEPTH);
+            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,    OGLGDI.SIZE_BUFFER_DOUBL);
         }
         
         if (INFO.IS_VULKAN()) {
@@ -120,11 +124,11 @@ namespace DVI {
 
         INFO.WINDOW = SDL_CreateWindow(INFO.TITLE, INFO.DIM.X, INFO.DIM.Y, INFO.DIM.W, INFO.DIM.H, SDL_WNDFLAGS);
 
-        assert(INFO.WINDOW != nullptr, SDL_GetError());
+        assert((INFO.WINDOW != nullptr), SDL_GetError());
 
     }
 
-    void BEGIN_DISPLAY(WNDINFO& INFO) {
+    void WINDOW_BEGIN(WNDINFO& INFO) {
         if (INFO.IS_OPENGL()) {
             INFO.WNDGDC = SDL_GL_CreateContext((SDL_Window*) INFO.WINDOW);
 
@@ -137,7 +141,7 @@ namespace DVI {
         INFO.RUNNING = true;
     }
 
-    void UPDATE_DISPLAY(WNDINFO& INFO) {
+    void WINDOW_UPDATE(WNDINFO& INFO) {
         SDL_Event EVT;
 
         while (INFO.RUNNING) {
@@ -155,7 +159,7 @@ namespace DVI {
         }
     }
 
-    void DESTROY_DISPLAY(WNDINFO& INFO) {
+    void WINDOW_DESTROY(WNDINFO& INFO) {
         INFO.WNDGDI->DestroyGDI();
         INFO.WNDGDI->DISPLAY_PROCESS = NULL;
 
@@ -165,53 +169,86 @@ namespace DVI {
     }
 };
 
+
+const char* SOURCE = R"(
+
+@stage (
+    use: "OpenGL"
+    tex: "Memory Unsafe"
+)
+
+@frames (
+    target: "GBuffer"
+
+    @ (frame: "Diffuse" tex: "2D_RGBA_RGBA16F")
+    @ (frame: "Normals" tex: "2D_RGB_RGB16F")
+    @ (frame: "Depth"   tex: "2D_DEPTH_DEPTH")
+)
+
+)";
+
 int main(int argc, char * argv[]) {
 
-    DVI::WNDINFO INFO;
-    INFO.DIM = { 0, 0, 1024, 600 };
-    INFO.FLAGS = INFO.OPENGL_WINDOW | INFO.CNTER_WINDOW;
-    INFO.TITLE = "My XSFram Application";
-    INFO.WNDGDI = new OpenGL_GDI;
-    INFO.WNDGDI->VERSION_MAJOR = 3;
-    INFO.WNDGDI->VERSION_MINOR = 1;
+    /*
+    XSFML::XSFMLDocument doc;
 
-    DVI::INIT_DISPLAY(INFO);
-    DVI::BEGIN_DISPLAY(INFO);
-    DVI::UPDATE_DISPLAY(INFO);
-    DVI::DESTROY_DISPLAY(INFO);
+    XSFML::XSFML_LOAD(doc, SOURCE);
+    XSFML::XSFML_PARSE(doc);
 
-    /*enum RunDriverModes {
-        NODRIVER,
-        OPENGL,
-    };
-
-    RunDriverModes mode;
-
-    BaseDisplayContext displayContext;
-    SetupDisplay setupDisplay;
-    MainLoop mainLoop;
-
-    mode = RunDriverModes::OPENGL;
+    std::vector<XSFML::XSFMLBlock> blocks;
     
-    switch (mode) {
-        case RunDriverModes::NODRIVER: {
-            break;
-        };
+    //doc.GetBlocksByKeywordValue(blocks, "name", "", false);
+    
+    for (size_t i = 0; i < doc.blocks.size(); i++) {
+        std::cout << "Block: " << doc.blocks[i].name << " Size: " << doc.blocks[i].attributes.size() << " [ID: " << doc.blocks[i]._id << " Anonymous?: " << doc.blocks[i].isAnonymous << "]" << std::endl;
+        
 
-        case RunDriverModes::OPENGL: {
-            displayContext.flag = BaseDisplayContext::OPENGL;
-            displayContext.GDI_VMinor = 1;
-            displayContext.GDI_VMajor = 3;
-            displayContext.ptr_GDI = new OpenGL_GDI;
+       for (auto k = doc.blocks[i].attributes.begin(); k != doc.blocks[i].attributes.end(); k++) {
+                std::cout << "\tAttribute: " << k->first << " = " << k->second << std::endl;
+       }
 
-            break;
-        };
+       std::cout << "\n" << std::endl;
+    }
 
-    };*/
+    XSFML::XSFML_CLEAR(doc);
+    */
 
-    //setupDisplay.InitDisplay(displayContext);
+    /*DEFAULT ENVIRONMENT VARS*/
 
-    //mainLoop.Start(setupDisplay, displayContext);
+    Environment::SET_STR_ENVVAR("WND_TITLE", "Application");
+    
+    Environment::SET_I32_ENVVAR("WND_SHOWX", 0);
+    Environment::SET_I32_ENVVAR("WND_SHOWY", 0);
+
+    Environment::SET_I32_ENVVAR("WND_SIZEX", 840);
+    Environment::SET_I32_ENVVAR("WND_SIZEY", 600);
+
+    Environment::SET_I32_ENVVAR("GL_MAJOR", 3);
+    Environment::SET_I32_ENVVAR("GL_MINOR", 1);
+
+    /*DEFAULT WINDOW/DISPLAY*/
+
+    DeviceConfig::WNDINFO INFO;
+
+    INFO.FLAGS = INFO.OPENGL_WINDOW | INFO.CENTER_WINDOW;
+
+    Environment::GET_I32_ENVVAR("WND_SHOWX", INFO.DIM.X);
+    Environment::GET_I32_ENVVAR("WND_SHOWY", INFO.DIM.Y);
+
+    Environment::GET_I32_ENVVAR("WND_SIZEX", INFO.DIM.W);
+    Environment::GET_I32_ENVVAR("WND_SIZEY", INFO.DIM.H);
+    
+    Environment::GET_STR_ENVVAR("WND_TITLE", INFO.TITLE);
+
+    INFO.WNDGDI = new OpenGLGDI;
+
+    Environment::GET_I32_ENVVAR("GL_MAJOR", (int&) INFO.WNDGDI->VERSION_MAJOR);
+    Environment::GET_I32_ENVVAR("GL_MINOR", (int&) INFO.WNDGDI->VERSION_MINOR);
+
+    DeviceConfig::WINDOW_INIT(INFO);
+    DeviceConfig::WINDOW_BEGIN(INFO);
+    DeviceConfig::WINDOW_UPDATE(INFO);
+    DeviceConfig::WINDOW_DESTROY(INFO);
 
     return INFO.EXITCODE;
 }

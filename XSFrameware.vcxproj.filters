@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Code\App.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Environment.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\GDI.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="glad\src\glad.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\MainLoop.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\OpenGLGDI.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\SetupDisplay.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="XSFML\XSFML.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="glad\include\glad\glad.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\IncludeGraphics.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\GDI.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Environment.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\OpenGLGDI.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\SetupDisplay.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\MainLoop.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="XSFML\XSFML.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shareds\default.stage.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{40341433-8024-493c-89cd-16262048b114}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{898c0f27-914e-434c-abbc-9f084df7443b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{3bcd2e04-5cbe-4134-893f-1570e0902187}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
